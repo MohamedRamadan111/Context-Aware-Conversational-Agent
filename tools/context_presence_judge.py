@@ -1,7 +1,8 @@
 import os
+from typing import Any
 from pydantic import BaseModel, Field
 from langchain_core.tools import BaseTool
-from langchain_openai import ChatOpenAI
+# from langchain_openai import ChatOpenAI
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -14,6 +15,7 @@ class ContextPresenceJudgeTool(BaseTool):
     description: str = "Use this tool to determine whether the user gave enough background or context in their message before answering."
 #    __init__ is just for optimization but the pydantic will generate one by itself is there is no __init__
 
+    llm: Any = None
 
     def _run(self, query: str) -> str:
         try:
@@ -29,19 +31,19 @@ class ContextPresenceJudgeTool(BaseTool):
             return "context_missing"
 
         try:
-            github_token = os.getenv("github_token") 
+            # github_token = os.getenv("github_token") 
             
-            llm = ChatOpenAI(
-                model="meta/Llama-4-Scout-17B-16E-Instruct",
-                api_key=github_token,
-                base_url="https://models.github.ai/inference",
-                temperature=0.0, 
-                max_tokens=2048,
-                model_kwargs={"top_p": 0.1}
-            )
+            # llm = ChatOpenAI(
+            #     model="meta/Llama-4-Scout-17B-16E-Instruct",
+            #     api_key=github_token,
+            #     base_url="https://models.github.ai/inference",
+            #     temperature=0.0, 
+            #     max_tokens=2048,
+            #     model_kwargs={"top_p": 0.1}
+            # )
             formatted_prompt = system_prompt.replace("{input}", query)
             
-            response = llm.invoke(formatted_prompt)
+            response = self.llm.invoke(formatted_prompt)
             
             result = response.content.lower().strip()
             
