@@ -34,7 +34,7 @@ class TestContextAwareAgent(unittest.TestCase):
             raise ValueError("Missing API Keys in .env file. Cannot run integration tests.")
 
         logger.info("Initializing LLM and Tools for testing...")
-        cls.llm = ChatGroq(temperature=0, model_name="llama3-70b-8192")
+        cls.llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
         
         cls.tools = [
             ContextPresenceJudgeTool(llm=cls.llm),
