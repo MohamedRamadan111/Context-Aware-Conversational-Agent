@@ -7,6 +7,8 @@ from langchain_groq import ChatGroq
 from agent.agent_runner import ContextAwareAgentManager
 from tools.context_presence_judge import ContextPresenceJudgeTool
 from tools.web_search_tool import WebSearchTool
+from tools.context_relevance_checker import ContextRelevanceCheckerTool
+from tools.context_splitter import ContextSplitterTool
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
@@ -38,7 +40,9 @@ class TestContextAwareAgent(unittest.TestCase):
         
         cls.tools = [
             ContextPresenceJudgeTool(llm=cls.llm),
-            WebSearchTool()
+            WebSearchTool(),
+            ContextRelevanceCheckerTool(llm=cls.llm),
+            ContextSplitterTool(llm=cls.llm)
         ]
         
         cls.agent_manager = ContextAwareAgentManager(llm=cls.llm, tools=cls.tools)
@@ -54,8 +58,9 @@ class TestContextAwareAgent(unittest.TestCase):
 
         try:
             
-            response = self.agent_executor.run(query)
-            
+            #response = self.agent_executor.run(query)
+            result = self.agent_executor.invoke({"input": query})
+            response = result.get("output", "")
            
             self.assertIsNotNone(response, "The agent returned a None response.")
             self.assertIsInstance(response, str, "The agent response must be a string.")
@@ -76,9 +81,11 @@ class TestContextAwareAgent(unittest.TestCase):
 
         try:
             
-            response = self.agent_executor.run(query)
+            #response = self.agent_executor.run(query)
+            result = self.agent_executor.invoke({"input": query})
+            response = result.get("output", "")
             
-            
+        
             self.assertIsNotNone(response, "The agent returned a None response.")
             self.assertIsInstance(response, str, "The agent response must be a string.")
             self.assertTrue(len(response) > 10, "The response is suspiciously short.")
@@ -87,6 +94,28 @@ class TestContextAwareAgent(unittest.TestCase):
             
         except Exception as e:
             self.fail(f"Agent crashed on context-missing query. Error: {e}")
+    
+    def test_irrelevant_context_flow(self):
+        """
+        Test Case 3: User provides irrelevant context.
+        The agent MUST ignore the context using ContextRelevanceChecker and answer the core question.
+        """
+        query = "Here is a recipe for chicken: 1 cup rice, 2 chicken breasts. How do I fix a NameError in Python?"
+        logger.info(f"Running Test 3 (Irrelevant Context) with query: {query}")
+
+        try:
+            result = self.agent_executor.invoke({"input": query})
+            response = result.get("output", "")
+            
+            self.assertIsNotNone(response, "The agent returned a None response.")
+            # Verify that the agent ignored the chicken and answered the Python question
+            self.assertIn("NameError", response, "The agent failed to address the Python NameError.")
+            self.assertNotIn("chicken", response.lower(), "The agent hallucinated and talked about the irrelevant chicken recipe.")
+            
+            logger.info(f"Test 3 Passed. Agent Answer snippet: {response[:100]}...")
+            
+        except Exception as e:
+            self.fail(f"Agent crashed on irrelevant-context query. Error: {e}")
 
 if __name__ == "__main__":
     
