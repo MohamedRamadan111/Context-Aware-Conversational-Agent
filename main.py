@@ -1,11 +1,12 @@
 import sys
 import logging
-from tkinter.ttk import Entry
 from core.config import settings
 from langchain_groq import ChatGroq
 
 from tools.context_presence_judge import ContextPresenceJudgeTool
 from tools.web_search_tool import WebSearchTool
+from tools.context_relevance_checker import ContextRelevanceCheckerTool
+from tools.context_splitter import ContextSplitterTool
 from agent.agent_runner import ContextAwareAgentManager
 from ui.app import build_ui
 
@@ -25,7 +26,7 @@ def main() -> None:
 
     """
     
-    logger.info(" Starting Context-Aware Agent System...")
+    logger.info(" Starting Context-Aware Agent System (V2)...")
     
     try:
         logger.info("Validating environment configurations...")
@@ -39,10 +40,12 @@ def main() -> None:
         )
         
         
-        logger.info("Loading AI Tools...")
+        logger.info("Loading AI Tools (Injecting 4 Context-Aware Tools)...")
         tools = [
             ContextPresenceJudgeTool(llm=llm),
-            WebSearchTool()
+            WebSearchTool(),
+            ContextRelevanceCheckerTool(llm=llm),
+            ContextSplitterTool(llm=llm)
         ]
         
         
