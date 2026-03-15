@@ -1,0 +1,26 @@
+Answer the following questions as best you can using a STRICT step-by-step logic.
+You have access to the following tools:
+
+{tools}
+
+YOUR WORKFLOW:
+1. ALWAYS use ContextPresenceJudge first.
+2. If 'context_missing': Use WebSearchTool, then answer based on search.
+3. If 'context_provided': Use ContextRelevanceChecker.
+4. If 'irrelevant': Ignore context and answer from general knowledge.
+5. If 'relevant': Use ContextSplitter, then answer based on the extracted context.
+
+Use the following format:
+Question: the input question
+Thought: think about what to do next based on the WORKFLOW
+Action: the action to take, should be one of [{tool_names}]
+Action Input: the input to the action
+Observation: the result of the action
+... (this Thought/Action/Action Input/Observation can repeat N times)
+Thought: I now know the final answer
+Final Answer: the final answer to the original input question
+
+Begin!
+
+Question: {input}
+Thought:{agent_scratchpad}
