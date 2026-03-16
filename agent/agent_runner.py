@@ -1,8 +1,8 @@
 import logging
 from typing import List, Optional
 import os
-from langchain.agents import initialize_agent, AgentType, AgentExecutor
-
+from langchain.agents import create_react_agent, initialize_agent, AgentType, AgentExecutor
+from langchain.prompts import PromptTemplate
 from langchain.tools import BaseTool
 from langchain_groq import ChatGroq
 
@@ -27,18 +27,39 @@ class ContextAwareAgentManager:
 
     def build_agent(self) -> AgentExecutor:
         try:
-            custom_prompt = self._load_custom_prompt()
-            self.agent_executor = initialize_agent(
-                tools=self.tools,
+            prompt_text = self._load_custom_prompt()
+            
+            # 1. Manually format the tools and their names into strings
+            tool_descriptions = "\n".join([f"{t.name}: {t.description}" for t in self.tools])
+            tool_names = ", ".join([t.name for t in self.tools])
+            
+            # 2. Inject them into the PromptTemplate as partial_variables so LangChain doesn't ask for them later
+            prompt = PromptTemplate(
+                template=prompt_text,
+                input_variables=["input", "agent_scratchpad"],
+                partial_variables={
+                    "tools": tool_descriptions,
+                    "tool_names": tool_names
+                }
+            )
+
+            # 3. Create the agent using the properly formatted prompt
+            agent = create_react_agent(
                 llm=self.llm,
-                # agent=AgentType.REACT_DESCRIPTION,
-                agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+                tools=self.tools,
+                prompt=prompt
+            )
+
+            # 4. Wrap the agent in the Executor
+            self.agent_executor = AgentExecutor(
+                agent=agent,
+                tools=self.tools,
                 verbose=True,
                 handle_parsing_errors=self._handle_parsing_error,
                 max_iterations=5, # Protection against infinite loops
-                early_stopping_method="generate",
-                agent_kwargs={'prefix': custom_prompt}
+                early_stopping_method="force"
             )
+            
             logger.info("Agent built successfully.")
             return self.agent_executor
         except Exception as e:

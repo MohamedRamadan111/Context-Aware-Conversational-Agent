@@ -1,0 +1,3 @@
+Analyze the following user message containing both context and a question. Is the
+context actually helpful for answering the question? Output strictly 'relevant' or
+'irrelevant'. Message: {input}

@@ -1,0 +1,3 @@
+Extract the background context and the core question from the following message.
+Return exactly in this format:\nContext: [Extracted Context]\nQuestion: [Extracted
+Question]\n\nMessage: {input}
