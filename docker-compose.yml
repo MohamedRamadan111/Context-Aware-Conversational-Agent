@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:alpine
+    container_name: agent_redis
+    ports:
+      - "6379:6379"
+    restart: always
+
+  agent_app:
+    build: .
+    container_name: context_aware_ui
+    ports:
+      - "7860:7860"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    restart: unless-stopped

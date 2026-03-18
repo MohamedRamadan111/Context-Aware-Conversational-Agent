@@ -1,0 +1,8 @@
+langchain
+langchain-groq
+pydantic
+python-dotenv
+requests
+tavily-python
+gradio
+redis
