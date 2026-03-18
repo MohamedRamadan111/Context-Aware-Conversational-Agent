@@ -1,14 +1,12 @@
 import sys
 import logging
-from core.config import settings
-from langchain_groq import ChatGroq
+import uvicorn
+import gradio as gr
 
-from tools.context_presence_judge import ContextPresenceJudgeTool
-from tools.web_search_tool import WebSearchTool
-from tools.context_relevance_checker import ContextRelevanceCheckerTool
-from tools.context_splitter import ContextSplitterTool
-from agent.agent_runner import ContextAwareAgentManager
 from ui.app import build_ui
+
+from api.server import app as fastapi_app
+from api.server import chat_stream_generator
 
 logging.basicConfig(
     level=logging.INFO, 
@@ -17,52 +15,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 def main() -> None:
-    
     """
-
-    The application's main entry point.
-
-    It configures settings, builds tools, compiles the agent, and launches the interface.
-
+    The application's main entry point (V3 - Enterprise Architecture).
+    It mounts the Gradio UI onto the FastAPI backend and launches the ASGI server.
     """
-    
-    logger.info(" Starting Context-Aware Agent System (V2)...")
+   
+    logger.info(" Launching V3: FastAPI + Gradio + Async Memory...")
     
     try:
-        logger.info("Validating environment configurations...")
-        settings.validate()
-        
-        logger.info(f"Initializing LLM ({settings.MODEL_NAME})...")
-        llm = ChatGroq(
-            temperature=0, 
-            model_name=settings.MODEL_NAME,
-            api_key=settings.GROQ_API_KEY
-        )
-        
-        
-        logger.info("Loading AI Tools (Injecting 4 Context-Aware Tools)...")
-        tools = [
-            ContextPresenceJudgeTool(llm=llm),
-            WebSearchTool(),
-            ContextRelevanceCheckerTool(llm=llm),
-            ContextSplitterTool(llm=llm)
-        ]
-        
-        
-        logger.info("Building the Agent Engine...")
-        agent_manager = ContextAwareAgentManager(llm=llm, tools=tools)
-        agent_executor = agent_manager.build_agent()
-        
-        
         logger.info("Initializing Gradio User Interface...")
-        demo = build_ui(agent_executor=agent_executor)
+
+        demo = build_ui(chat_function=chat_stream_generator)
         
-        logger.info("System is ready. Launching server on http://127.0.0.1:7860")
+        logger.info("Mounting Gradio UI onto FastAPI server...")
+        app = gr.mount_gradio_app(fastapi_app, demo, path="/")
         
-        demo.launch(server_name="127.0.0.1", server_port=7860, share=False)
+        logger.info("System is ready. Launching Uvicorn server on http://0.0.0.0:7860")
+        uvicorn.run(app, host="0.0.0.0", port=7860)
         
     except Exception as e:
-        
         logger.critical(f"Fatal error during system startup: {e}")
         sys.exit(1)
 
