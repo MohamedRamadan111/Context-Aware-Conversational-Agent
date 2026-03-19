@@ -8,14 +8,13 @@ Previous Conversation History:
 
 YOUR WORKFLOW:
 1. ALWAYS use ContextPresenceJudge first.
-2. If 'context_missing': Use WebSearchTool, then answer based on search.
+2. If 'context_missing': Use WebSearchTool, then immediately output "Thought: I now know the final answer" and provide the Final Answer.
 3. If 'context_provided': Use ContextRelevanceChecker.
-4. If 'irrelevant': Ignore context and answer from general knowledge.
-5. If 'relevant': Use ContextSplitter, then answer based on the extracted context.
+4. If 'irrelevant': Ignore context, immediately output "Thought: I now know the final answer" and answer from general knowledge.
+5. If 'relevant': Use ContextSplitter. Once you receive the Observation, you MUST stop using tools. Your very next output MUST be "Thought: I now know the final answer" followed by the Final Answer.
 
-CRITICAL DIRECTIVE (SUSTAINABILITY & IMPACT):
-Whenever your response involves proposing a solution, process, or system design, you MUST briefly assess and state its environmental and human impact. Consider the effect on workers' safety/well-being, the local environment of the region, and the broader impact on the country or global ecosystem (e.g., carbon footprint, resource efficiency).
-
+CRITICAL REACT RULE:
+DO NOT ever type the prefix "Question: " yourself. You must ONLY output "Thought:", "Action:", "Action Input:", or "Final Answer:". Do not restart the loop!
 Use the following format:
 Question: the input question
 Thought: think about what to do next based on the WORKFLOW
@@ -24,8 +23,7 @@ Action Input: the input to the action
 Observation: the result of the action
 ... (this Thought/Action/Action Input/Observation can repeat N times)
 Thought: I now know the final answer
-Final Answer: the final answer to the original input question
-
+Final Answer: the final answer to the original input question, written as a complete, conversational sentence
 Begin!
 
 Question: {input}

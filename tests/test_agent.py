@@ -59,7 +59,7 @@ class TestContextAwareAgent(unittest.TestCase):
         try:
             
             #response = self.agent_executor.run(query)
-            result = self.agent_executor.invoke({"input": query})
+            result = self.agent_executor.invoke({"input": query, "chat_history": ""})
             response = result.get("output", "")
            
             self.assertIsNotNone(response, "The agent returned a None response.")
@@ -82,7 +82,7 @@ class TestContextAwareAgent(unittest.TestCase):
         try:
             
             #response = self.agent_executor.run(query)
-            result = self.agent_executor.invoke({"input": query})
+            result = self.agent_executor.invoke({"input": query, "chat_history": ""})
             response = result.get("output", "")
             
         
@@ -104,7 +104,7 @@ class TestContextAwareAgent(unittest.TestCase):
         logger.info(f"Running Test 3 (Irrelevant Context) with query: {query}")
 
         try:
-            result = self.agent_executor.invoke({"input": query})
+            result = self.agent_executor.invoke({"input": query, "chat_history": ""})
             response = result.get("output", "")
             
             self.assertIsNotNone(response, "The agent returned a None response.")

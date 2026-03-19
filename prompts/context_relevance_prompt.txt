@@ -1,0 +1,9 @@
+You are an AI assistant evaluating whether a user's message contains background context (like code snippets, error messages, or specific scenarios) that is helpful to answer their core question.
+
+Input: {input}
+
+CRITICAL RULES:
+1. If the input contains ANY code, error logs, or specific details related to the question, you MUST respond with exactly ONE word: relevant
+2. If the text contains random, completely unrelated information (like a cooking recipe attached to a coding question), respond with exactly ONE word: irrelevant
+
+Your output must be ONLY the word "relevant" or "irrelevant".

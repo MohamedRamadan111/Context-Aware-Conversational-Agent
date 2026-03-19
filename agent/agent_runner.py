@@ -1,8 +1,9 @@
 import logging
 from typing import List, Optional
 import os
-from langchain.agents import initialize_agent, AgentType, AgentExecutor
 
+from langchain.agents import AgentExecutor, create_react_agent
+from langchain.prompts import PromptTemplate
 from langchain.tools import BaseTool
 from langchain_groq import ChatGroq
 
@@ -27,18 +28,37 @@ class ContextAwareAgentManager:
 
     def build_agent(self) -> AgentExecutor:
         try:
-            custom_prompt = self._load_custom_prompt()
-            self.agent_executor = initialize_agent(
-                tools=self.tools,
+            prompt_text = self._load_custom_prompt()
+            
+            # Your Week 2 fix: Manually format the tools
+            tool_descriptions = "\n".join([f"{t.name}: {t.description}" for t in self.tools])
+            tool_names = ", ".join([t.name for t in self.tools])
+            
+            # The teammate's Week 3 feature: added "chat_history"
+            prompt = PromptTemplate(
+                template=prompt_text,
+                input_variables=["input", "agent_scratchpad", "chat_history"],
+                partial_variables={
+                    "tools": tool_descriptions,
+                    "tool_names": tool_names
+                }
+            )
+
+            agent = create_react_agent(
                 llm=self.llm,
-                # agent=AgentType.REACT_DESCRIPTION,
-                agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+                tools=self.tools,
+                prompt=prompt
+            )
+
+            self.agent_executor = AgentExecutor(
+                agent=agent,
+                tools=self.tools,
                 verbose=True,
                 handle_parsing_errors=self._handle_parsing_error,
-                max_iterations=5, # Protection against infinite loops
-                early_stopping_method="generate",
-                agent_kwargs={'prefix': custom_prompt}
+                max_iterations=5, 
+                early_stopping_method="force"
             )
+            
             logger.info("Agent built successfully.")
             return self.agent_executor
         except Exception as e:
