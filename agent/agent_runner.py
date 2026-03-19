@@ -30,11 +30,9 @@ class ContextAwareAgentManager:
         try:
             prompt_text = self._load_custom_prompt()
             
-            # Your Week 2 fix: Manually format the tools
             tool_descriptions = "\n".join([f"{t.name}: {t.description}" for t in self.tools])
             tool_names = ", ".join([t.name for t in self.tools])
             
-            # The teammate's Week 3 feature: added "chat_history"
             prompt = PromptTemplate(
                 template=prompt_text,
                 input_variables=["input", "agent_scratchpad", "chat_history"],
