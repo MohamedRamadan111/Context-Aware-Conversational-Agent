@@ -29,7 +29,7 @@ class WebSearchTool(BaseTool):
                 "query": query
             }
             
-            response = requests.post(url, json=payload, timeout=10)
+            response = requests.post(url, json=payload, timeout=50)
             
             response.raise_for_status()
             

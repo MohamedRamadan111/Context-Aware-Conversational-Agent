@@ -1,12 +1,15 @@
 import json
 import logging
+import os
 import redis.asyncio as redis
+from dotenv import load_dotenv
+
 
 logger = logging.getLogger(__name__)
 
 class AsyncRedisSessionManager:
-    def __init__(self, redis_url="redis://redis:6379/0"):
-        self.redis_url = redis_url
+    def __init__(self, redis_url=None):
+        self.redis_url = redis_url or os.getenv("redisURL")
         self.client = None
 
     async def connect(self):
