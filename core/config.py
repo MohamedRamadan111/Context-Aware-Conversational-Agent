@@ -12,7 +12,7 @@ class Settings:
     GROQ_API_KEY: str = os.getenv("GROQ_API_KEY", "")
     TAVILY_API_KEY: str = os.getenv("TAVILY_API_KEY", "")
     MODEL_NAME: str = "llama-3.3-70b-versatile"
-    REQUEST_TIMEOUT: int = 10  
+    REQUEST_TIMEOUT: int = 100 
 
     @classmethod
     def validate(cls) -> None:
