@@ -3,6 +3,7 @@ import asyncio
 import logging
 import gradio as gr
 from fastapi import FastAPI, BackgroundTasks, Request
+from prometheus_fastapi_instrumentator import Instrumentator
 from langchain_groq import ChatGroq
 from core.config import settings
 from api.memory_manager import AsyncRedisSessionManager
@@ -16,6 +17,7 @@ from agent.agent_runner import ContextAwareAgentManager
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="Context-Aware Enterprise API")
+Instrumentator().instrument(app).expose(app)
 session_manager = AsyncRedisSessionManager()
 
 llm = ChatGroq(temperature=0, model_name=settings.MODEL_NAME, api_key=settings.GROQ_API_KEY, streaming=True)

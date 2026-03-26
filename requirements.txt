@@ -8,3 +8,4 @@ requests
 tavily-python
 gradio
 redis
+prometheus-fastapi-instrumentator
