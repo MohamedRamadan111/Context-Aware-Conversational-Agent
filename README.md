@@ -3,12 +3,14 @@
   <p><strong>A Production-Grade, Observable, and Scalable AI Architecture</strong></p>
 
   <p>
+    <a href="https://huggingface.co/spaces/MWBadra/Context-Aware-Conversational-Agent"><img src="https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-yellow" alt="Hugging Face Spaces"></a>
     <a href="https://www.python.org/downloads/release/python-3100/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+"></a>
     <a href="https://fastapi.tiangolo.com/"><img src="https://img.shields.io/badge/FastAPI-0.100.0+-009688.svg?style=flat&logo=FastAPI&logoColor=white" alt="FastAPI"></a>
     <a href="https://www.docker.com/"><img src="https://img.shields.io/badge/docker-ready-blue.svg?logo=docker&logoColor=white" alt="Docker Ready"></a>
-    <a href="https://opensource.org/licenses/MIT"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   </p>
 </div>
+
+<br />
 
 <br />
 
@@ -27,6 +29,8 @@
 ---
 
 ## Executive Summary
+
+**Live Demo:** [Access the Agent on Hugging Face Spaces](https://huggingface.co/spaces/MWBadra/Context-Aware-Conversational-Agent)
 
 Building an LLM-powered agent for enterprise applications requires moving beyond mere API wrappers. It demands deterministic state management, rigorous observability, and decoupled microservices to handle concurrent asynchronous workloads gracefully. 
 
